@@ -60,3 +60,33 @@ class Stack():
     def generate(self, num, min, max):
         for i in range(num):
             self.push(random.randint(min, max))
+
+class Atraccion:
+    def __init__(self, nombre, capacidad):
+        self.nombre = nombre
+        self.capacidad = capacidad
+        self.visitantes = Stack()
+    
+    def __str__(self):
+        return f"{self.nombre} ({self.capacidad}/turno): {self.visitantes}"
+
+
+class ParqueDiversiones:
+    def __init__(self):
+        self.atracciones = Queue()
+        self.contador_visitantes = 1
+    
+    def agregar_atraccion(self, nombre, capacidad):
+        atr = Atraccion(nombre, capacidad)
+        self.atracciones.enqueue(atr)
+        print(f"Atraccion '{nombre}' agregada (capacidad: {capacidad}/turno) ")
+    
+    def agregar_visitante(self):
+        if self.atracciones.is_empty():
+            print("No hay atracciones para añadir visitantes")
+            return
+        visitante = f"V{self.contador_visitantes}"
+        self.contador_visitantes += 1
+        primera = self.atracciones.first()
+        primera.visitantes.push(visitante)
+        print(f"visitante {visitante} agregado a {primera.nombre}")
