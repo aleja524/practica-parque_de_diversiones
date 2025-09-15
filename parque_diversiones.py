@@ -144,19 +144,93 @@ class ParqueDiversiones:
 
         self.atracciones.enqueue(atr)
         self.ejecutar_turno(n - 1)
+    
+    def eliminar_atraccion(self, nombre, n = None):
+        if n is None:
+            if self.atracciones.is_empty():
+                print("No hay atracciones en el parque")
+                return
+            n = self.atracciones.len()
+            print(f"\n Eliminando atraccion '{nombre}'")
+        
+        if n == 0:
+            print("No se encontro ninguna atraccion con nombre '{nombre}'")
+            return
+        
+        atr = self.atracciones.dequeue()
+
+        if atr.nombre == nombre:
+            if n > 1:
+                siguiente = self.atracciones.first()
+                self.mover_visitantes(atr, siguiente)
+                print(f"Atraccion '{nombre}' eliminada. visitantes movidos a '{siguiente.nombre}'")
+            else:
+                self.sacar_visitantes(atr)
+                print(f"Atraccion '{nombre}' eliminada (era la ultima)")
+            return
+        
+        else:
+            self.atracciones.enqueue(atr)
+            self.eliminar_atraccion(nombre, n - 1)
+    
+
+    def mover_visitantes(self, origen, destino):
+        if origen.visitantes.is_empty():
+            return
+        v = origen.visitantes.pop()
+        destino.visitantes.push(v)
+        self.mover_visitantes(origen, destino)
+    
+    def sacar_visitantes(self, origen):
+        if origen.visitantes.is_empty():
+            return
+        v = origen.visitantes.pop()
+        print(f"{v} salio del parque (atraccion eliminada)")
+        self.sacar_visitantes(origen)
+
+def menu():
+    parque = ParqueDiversiones()
+    parque.agregar_atraccion("Montaña Rusa", 3)
+    parque.agregar_atraccion("Carros Chocones", 2)
+    parque.agregar_atraccion("Rueda de la Fortuna", 2)
+    parque.agregar_atraccion("Casa del Terror", 2)
+
+    while True:
+        print("\n🎢 MENÚ DEL PARQUE DE DIVERSIONES 🎢")
+        print("1. Agregar atracción")
+        print("2. Eliminar atracción")
+        print("3. Agregar visitante")
+        print("4. Consultar estado")
+        print("5. Ejecutar un turno")
+        print("0. Salir")
+
+        opcion = input("Seleccione una opción: ")
+
+        if opcion == "1":
+            nombre = input("Ingrese el nombre de la atracción: ")
+            capacidad = int(input("Ingrese la capacidad por turno: "))
+            parque.agregar_atraccion(nombre, capacidad)
+
+        elif opcion == "2":
+            nombre = input("Ingrese el nombre de la atracción a eliminar: ")
+            parque.eliminar_atraccion(nombre)
+
+        elif opcion == "3":
+            parque.agregar_visitante()
+
+        elif opcion == "4":
+            parque.consultar_estado()
+
+        elif opcion == "5":
+            parque.ejecutar_turno()
+
+        elif opcion == "0":
+            print("👋 Cerrando parque... ¡Hasta la próxima!")
+            break
+
+        else:
+            print("❌ Opción inválida, intente de nuevo.")
 
 
-parque = ParqueDiversiones()
-parque.agregar_atraccion("Montaña Rusa", 3)
-parque.agregar_atraccion("Carros Chocones", 2)
-parque.agregar_atraccion("Rueda de la Fortuna", 2)
-parque.agregar_atraccion("Casa del Terror", 2)
-
-for _ in range(5):
-    parque.agregar_visitante()
-
-parque.consultar_estado()
-
-parque.ejecutar_turno()
-
-parque.consultar_estado()
+if __name__ == "__main__":
+    menu()
