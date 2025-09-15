@@ -90,3 +90,39 @@ class ParqueDiversiones:
         primera = self.atracciones.first()
         primera.visitantes.push(visitante)
         print(f"visitante {visitante} agregado a {primera.nombre}")
+    
+    def ejecutar_turno(self, n = None):
+        if n is None:
+            if self.atracciones.is_empty():
+                print("No hay atracciones en el parque")
+                return
+            n = self.atracciones.len()
+            print("\n === Ejecutando un turno ===")
+        
+        if n == 0:
+            print("=== Fin del turno === \n")
+            return
+        
+        atr = self.atracciones.dequeue()
+        next_atr = None
+        if n > 1:
+            next_atr = self.atracciones.first()
+        print(f"\n -- {atr.nombre} (capacidad {atr.capacidad}) --")
+
+        def procesar_visitantes(capacidad):
+            if capacidad == 0 or atr.visitantes.is_empty():
+                return
+            v = atr.visitantes.pop()
+            if next_atr:
+                next_atr.visitantes.push(v)
+                print(f"Procesado {v} -> pasa a {next_atr.nombre}")
+            else:
+                print(f"Procesado {v} -> SALE del parque")
+            procesar_visitantes(capacidad - 1)
+
+        procesar_visitantes(atr.capacidad)
+        print(f"En espera en {atr.nombre}: {atr.visitantes}")
+
+        self.atracciones.enqueue(atr)
+        self.ejecutar_turno(n - 1)
+        
