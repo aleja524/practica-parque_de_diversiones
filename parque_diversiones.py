@@ -91,6 +91,25 @@ class ParqueDiversiones:
         primera.visitantes.push(visitante)
         print(f"visitante {visitante} agregado a {primera.nombre}")
     
+    def consultar_estado(self, n = None):
+        if n is None:
+            if self.atracciones.is_empty():
+                print("No hay atracciones en el parque")
+                return
+            print("\n --- Estado del parque ---")
+            n = self.atracciones.len()
+        
+        if n == 0:
+            print(" --- Fin del estado --- \n")
+            return
+        
+        atr = self.atracciones.dequeue()
+        print(f"{atr.nombre} ({atr.capacidad}/turno): {atr.visitantes}")
+        self.atracciones.enqueue(atr)
+
+        self.consultar_estado(n - 1)
+
+    
     def ejecutar_turno(self, n = None):
         if n is None:
             if self.atracciones.is_empty():
@@ -125,4 +144,19 @@ class ParqueDiversiones:
 
         self.atracciones.enqueue(atr)
         self.ejecutar_turno(n - 1)
-        
+
+
+parque = ParqueDiversiones()
+parque.agregar_atraccion("Montaña Rusa", 3)
+parque.agregar_atraccion("Carros Chocones", 2)
+parque.agregar_atraccion("Rueda de la Fortuna", 2)
+parque.agregar_atraccion("Casa del Terror", 2)
+
+for _ in range(5):
+    parque.agregar_visitante()
+
+parque.consultar_estado()
+
+parque.ejecutar_turno()
+
+parque.consultar_estado()
