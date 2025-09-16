@@ -187,6 +187,31 @@ class ParqueDiversiones:
         v = origen.visitantes.pop()
         print(f"{v} salio del parque (atraccion eliminada)")
         self.sacar_visitantes(origen)
+    
+    def sistema_vacio(self, n = None):
+        if n is None:
+            if self.atracciones.is_empty():
+                return True
+            n = self.atracciones.len()
+        
+        if n == 0:
+            return True
+        
+        atr = self.atracciones.dequeue()
+        esta_vacio = atr.visitantes.is_empty()
+        self.atracciones.enqueue(atr)
+
+        if not esta_vacio:
+            return False
+        return self.sistema_vacio(n - 1)
+    
+    def ejecutar_todos_turnos(self):
+        if self.sistema_vacio():
+            print("Todos los visitantes han salido, No hay mas turnos")
+            return
+        
+        self.ejecutar_turno()
+        self.ejecutar_todos_turnos()
 
 def menu():
     parque = ParqueDiversiones()
@@ -196,12 +221,13 @@ def menu():
     parque.agregar_atraccion("Casa del Terror", 2)
 
     while True:
-        print("\n🎢 MENÚ DEL PARQUE DE DIVERSIONES 🎢")
+        print("\n MENÚ DEL PARQUE DE DIVERSIONES")
         print("1. Agregar atracción")
         print("2. Eliminar atracción")
         print("3. Agregar visitante")
         print("4. Consultar estado")
         print("5. Ejecutar un turno")
+        print("6. Ejecutar todos los turnos hasta vaciar el parque")
         print("0. Salir")
 
         opcion = input("Seleccione una opción: ")
@@ -223,6 +249,11 @@ def menu():
 
         elif opcion == "5":
             parque.ejecutar_turno()
+        
+        elif opcion == "6":
+            ejecutar_todos = input("Esto procedera a vaciar el parque ¿seguro? (si/no): ")
+            if ejecutar_todos.lower() == "si":
+                parque.ejecutar_todos_turnos()
 
         elif opcion == "0":
             print("👋 Cerrando parque... ¡Hasta la próxima!")
